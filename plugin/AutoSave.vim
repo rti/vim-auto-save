@@ -51,11 +51,7 @@ augroup END
 
 command AutoSaveToggle :call AutoSaveToggle()
 
-function AutoSave()
-  if g:auto_save == 0
-    return
-  end
-
+func DoSaveCallback(timer)
   let was_modified = s:IsModified()
   if !was_modified
     return
@@ -88,6 +84,16 @@ function AutoSave()
       echo "(AutoSave) saved at " . strftime("%H:%M:%S")
     endif
   endif
+endf
+
+function AutoSave()
+  if g:auto_save == 0
+    return
+  end
+  if exists('s:timer')
+      call timer_stop(s:timer)
+  endif
+  let s:timer = timer_start(500, 'DoSaveCallback')
 endfunction
 
 function s:IsModified()
