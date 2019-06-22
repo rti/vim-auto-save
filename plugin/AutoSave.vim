@@ -20,6 +20,8 @@ endif
 if !exists("g:auto_save_silent")
   let g:auto_save_silent = 0
 endif
+    
+
 
 if !exists("g:auto_save_write_all_buffers")
   let g:auto_save_write_all_buffers = 0
@@ -56,7 +58,9 @@ func DoSaveCallback(timer)
   if !was_modified
     return
   end
-
+  if mode() != 'n'
+    return
+  endif
   if exists("g:auto_save_presave_hook")
     let g:auto_save_abort = 0
     execute "" . g:auto_save_presave_hook
@@ -91,7 +95,7 @@ function AutoSave()
     return
   end
   if exists('s:timer')
-      call timer_stop(s:timer)
+    call timer_stop(s:timer)
   endif
   let s:timer = timer_start(500, 'DoSaveCallback')
 endfunction
