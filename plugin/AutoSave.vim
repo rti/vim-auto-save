@@ -1,7 +1,7 @@
 "======================================
 "    Script Name:  vim-auto-save (http://www.vim.org/scripts/script.php?script_id=4521)
 "    Plugin Name:  AutoSave
-"        Version:  0.1.10
+"        Version:  0.1.12
 "======================================
 
 if exists("g:auto_save_loaded")
@@ -87,7 +87,7 @@ func DoSaveCallback(timer)
 endf
 
 function AutoSave()
-  if g:auto_save == 0
+  if s:GetVar('auto_save', 0) == 0
     return
   end
   if exists('s:timer')
@@ -103,6 +103,23 @@ function s:IsModified()
     return len(buffers) > 0
   else
     return &modified
+  endif
+endfunction
+
+" Resolve variable value by climbing up window-buffer-global hierarchy
+" So, buffer-local or window-local variables override global ones
+" If not found on any level, fallbacks to default value or empty string
+function s:GetVar(...)
+  let varName = a:1
+
+  if exists('w:' . varName)
+    return w:{varName}
+  elseif exists('b:' . varName)
+    return b:{varName}
+  elseif exists('g:' . varName)
+    return g:{varName}
+  else
+    return exists('a:2') ? a:2 : ''
   endif
 endfunction
 
