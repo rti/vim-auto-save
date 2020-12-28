@@ -20,6 +20,8 @@ endif
 if !exists("g:auto_save_silent")
   let g:auto_save_silent = 0
 endif
+    
+
 
 if !exists("g:auto_save_write_all_buffers")
   let g:auto_save_write_all_buffers = 0
@@ -51,15 +53,14 @@ augroup END
 
 command AutoSaveToggle :call AutoSaveToggle()
 
-function AutoSave()
-  if s:GetVar('auto_save', 0) == 0
-    return
-  end
-
+func DoSaveCallback(timer)
   let was_modified = s:IsModified()
   if !was_modified
     return
   end
+  if mode() != 'n'
+    return
+  endif
 
   if exists("g:auto_save_presave_hook")
     let g:auto_save_abort = 0
@@ -68,6 +69,15 @@ function AutoSave()
       return
     endif
   endif
+
+  " If the user has undone something, don't automatically save
+  let undos = undotree()
+  for ent in undos.entries
+      if has_key(ent, 'curhead')
+          return
+      endif
+  endfor
+
 
   " Preserve marks that are used to remember start and
   " end position of the last changed or yanked text (`:h '[`).
@@ -88,6 +98,16 @@ function AutoSave()
       echo "(AutoSave) saved at " . strftime("%H:%M:%S")
     endif
   endif
+endf
+
+function AutoSave()
+  if s:GetVar('auto_save', 0) == 0
+    return
+  end
+  if exists('s:timer')
+    call timer_stop(s:timer)
+  endif
+  let s:timer = timer_start(500, 'DoSaveCallback')
 endfunction
 
 function s:IsModified()
