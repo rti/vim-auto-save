@@ -84,7 +84,9 @@ func DoSaveCallback(timer)
   let first_char_pos = getpos("'[")
   let last_char_pos = getpos("']")
 
-  call DoSave()
+  if &readonly == 0 && filereadable(bufname('%'))
+    call DoSave()
+  endif
 
   call setpos("'[", first_char_pos)
   call setpos("']", last_char_pos)
