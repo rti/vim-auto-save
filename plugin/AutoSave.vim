@@ -61,7 +61,6 @@ func DoSaveCallback(timer)
   if mode() != 'n'
     return
   endif
-
   if exists("g:auto_save_presave_hook")
     let g:auto_save_abort = 0
     execute "" . g:auto_save_presave_hook
@@ -69,15 +68,6 @@ func DoSaveCallback(timer)
       return
     endif
   endif
-
-  " If the user has undone something, don't automatically save
-  let undos = undotree()
-  for ent in undos.entries
-      if has_key(ent, 'curhead')
-          return
-      endif
-  endfor
-
 
   " Preserve marks that are used to remember start and
   " end position of the last changed or yanked text (`:h '[`).
