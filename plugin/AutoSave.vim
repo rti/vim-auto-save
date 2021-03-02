@@ -99,7 +99,7 @@ function AutoSave()
   if exists('s:timer')
     call timer_stop(s:timer)
   endif
-  let s:timer = timer_start(10, 'DoSaveCallback')
+  let s:timer = timer_start(100, 'DoSaveCallback')
 endfunction
 
 function s:IsModified()
